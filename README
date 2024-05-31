@@ -1,0 +1,16 @@
+# Friend Request
+
+This is a Django project named `friend_request`.
+
+## Setup
+
+1. Clone the repository
+2. Navigate to the project directory
+3. Create a virtual environment: `python3 -m venv venv`
+4. Activate the virtual environment: `source venv/bin/activate`
+5. Install the requirements: `pip install -r requirements.txt`
+6. Run the server: `python manage.py runserver`
+
+## Usage
+
+Visit `http://localhost:8000` in your web browser to view the application.
