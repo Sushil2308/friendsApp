@@ -9,8 +9,8 @@ from rest_framework.permissions import IsAuthenticated
 from django.utils import timezone
 from django.db.models import F, Q
 from django.core.paginator import Paginator
-from rest_framework.decorators import permission_classes, api_view
-
+from django.core.exceptions import ValidationError
+from django.core.validators import validate_email
 
 class LoginProcess(APIView):
 
@@ -47,6 +47,13 @@ class UserSignUp(APIView):
             if not username or not password or not email:
                 return Response(
                     {"error": "Please provide both username, password and email"},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+            try:
+                validate_email(email)
+            except ValidationError:
+                return Response(
+                    {"error": "Invalid email address provided"},
                     status=status.HTTP_400_BAD_REQUEST,
                 )
             if User.objects.filter(username=username).exists():
