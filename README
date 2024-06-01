@@ -31,3 +31,5 @@ Ensure you have the following installed on your system:
 ## Usage
 
 Visit `http://127.0.0.1:8000` in your web browser to view the application.
+
+Then add a Thunder Client Extention in VS code `rangav.vscode-thunder-client`
