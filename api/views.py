@@ -106,7 +106,7 @@ class FriendRequestProcess(APIView):
                     requestedBy_id=requestedBy.id,
                     requestedOn__range=[oneMinuteAgo, currentTime],
                 ).count()
-                > 3
+                >= 3
             ):
                 return Response(
                     {"error": "You can't send more than 3 friend requests in a minute"},
