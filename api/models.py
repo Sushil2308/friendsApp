@@ -10,14 +10,14 @@ class RequestStatus(models.Model):
 
 
 class FriendRequest(models.Model):
-    sender = models.ForeignKey(User, on_delete=models.CASCADE, related_name="sender")
-    send_to = models.ForeignKey(
+    requestedBy = models.ForeignKey(User, on_delete=models.CASCADE, related_name="sender")
+    requestedTo = models.ForeignKey(
         User, on_delete=models.CASCADE, related_name="receiver"
     )
     status = models.ForeignKey(RequestStatus, on_delete=models.CASCADE)
-    send_request_on = models.DateTimeField(auto_now_add=True)
+    requestedOn = models.DateTimeField(auto_now_add=True)
     class Meta:
-        unique_together = ("sender", "send_to")
+        unique_together = ("requestedBy", "requestedTo")
 
 
 class UserFriends(models.Model):

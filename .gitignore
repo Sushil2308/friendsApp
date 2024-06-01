@@ -18,3 +18,5 @@ venv/
 
 # If you are using VS Code #
 .vscode/
+
+api/migrations/*.py

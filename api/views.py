@@ -9,6 +9,7 @@ from rest_framework.permissions import IsAuthenticated
 from django.utils import timezone
 from django.db.models import F, Q
 from django.core.paginator import Paginator
+from rest_framework.decorators import permission_classes, api_view
 
 
 class LoginProcess(APIView):
@@ -77,22 +78,22 @@ class FriendRequestProcess(APIView):
 
     def post(self, request):
         try:
-            sender = request.user
-            receiver = User.objects.get(username=request.data.get("receiver"))
-            if sender == receiver:
+            requestedBy = request.user
+            requestedTo = User.objects.get(username=request.data.get("requestedTo"))
+            if requestedBy == requestedTo:
                 return Response(
                     {"error": "You can't send friend request to yourself"},
                     status=status.HTTP_400_BAD_REQUEST,
                 )
             if UserFriends.objects.filter(
-                user_id=sender.id, friend_id=receiver.id
+                user_id=requestedBy.id, friend_id=requestedTo.id
             ).exists():
                 return Response(
                     {"error": "You are already friends with this user"},
                     status=status.HTTP_400_BAD_REQUEST,
                 )
             if FriendRequest.objects.filter(
-                sender_id=sender.id, send_to_id=receiver.id
+                requestedBy_id=requestedBy.id,requestedTo_id=requestedTo.id
             ).exists():
                 return Response(
                     {"error": "Friend request already sent to this user"},
@@ -102,8 +103,8 @@ class FriendRequestProcess(APIView):
             oneMinuteAgo = currentTime - timezone.timedelta(minutes=1)
             if (
                 FriendRequest.objects.filter(
-                    sender_id=sender.id,
-                    send_request_on__range=[oneMinuteAgo, currentTime],
+                    requestedBy_id=requestedBy.id,
+                    requestedOn__range=[oneMinuteAgo, currentTime],
                 ).count()
                 > 3
             ):
@@ -114,7 +115,7 @@ class FriendRequestProcess(APIView):
 
             requrstStatus = RequestStatus.objects.get(status="Pending")
             FriendRequest.objects.create(
-                sender_id=sender.id, send_to_id=receiver.id, status=requrstStatus
+                requestedBy_id=requestedBy.id, requestedTo_id=requestedTo.id, status=requrstStatus
             )
             return Response(
                 {"message": "Friend request sent successfully"},
@@ -129,65 +130,54 @@ class FriendRequestProcess(APIView):
 class FriendRequestRetrival(APIView):
     permission_classes = [IsAuthenticated]
 
-    def get(self, request):
+    @staticmethod
+    def GetReceivedPendingFriedRequets(request):
         try:
-            if request.query_params.get("statusType", None):
-                statusType = request.query_params.get("statusType", None)
-                if not statusType:
-                    return Response(
-                        {"error": "Please provide statusType"},
-                        status=status.HTTP_400_BAD_REQUEST,
-                    )
-                # When You want to get all friend requests which is accepted by the user Then send statusType as "Accepted"
-                # When You want to get all friend requests which is pending Then send statusType as "Pending"
-                statusType = RequestStatus.objects.get(status=statusType)
-                friendObjects = FriendRequest.objects.filter(
-                    sender_id=request.user.id, status_id=statusType.id
-                )
-                if statusType.status.lower() == "pending":
-                    return Response(
-                        friendObjects.values(
-                            requestTo=F("send_to__username"),
-                            requestedOn=F("send_request_on"),
-                        ),
-                        status=status.HTTP_200_OK,
-                    )
-                if statusType.status.lower() == "rejected":
-                    return Response(
-                        friendObjects.values(
-                            rejectedBy=F("send_to__username"),
-                            requestedOn=F("send_request_on"),
-                        ),
-                        status=status.HTTP_200_OK,
-                    )
+            # When You want to get all friend requests which is pending Then send statusType as "Pending"
+            statusType = RequestStatus.objects.get(status="Pending").id
+            return Response(FriendRequest.objects.filter(status_id=statusType, requestedTo_id=request.user.id).values(
+                requestedFrom = F('requestedBy__username'),
+                pendingFrom = F('requestedOn')
+            ), status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    @staticmethod
+    def GetYourSentAcceptedFriendRequest(request):
+        try:
+            # When You want to get all friend requests which is accepted by the user Then send statusType as "Accepted"
+            statusType = RequestStatus.objects.get(status="Accepted").id
+            return Response(FriendRequest.objects.filter(status_id=statusType, requestedBy_id=request.user.id).values(
+                acceptedUsername = F('requestedTo__username'),
+                acceptedOn = F('requestedOn')
+            ), status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    @staticmethod
+    def GetUserSearchByUsernameAndEmail(request):
+        try:
+            searchTerm = request.GET.get("searchTerm", None)
+            print(searchTerm)
+            pageNo = request.GET.get("pageNo", 1)
+            perPage = request.GET.get("perPage", 10)
+            if not pageNo  or not pageNo > 0:
                 return Response(
-                    friendObjects.values(
-                        acceptedBy=F("send_to__username"),
-                        requestedOn=F("send_request_on"),
-                    ),
-                    status=status.HTTP_200_OK,
+                    {"error": "Please provide valid pageNo"},
+                    status=status.HTTP_400_BAD_REQUEST,
                 )
-            if request.query_params.get("searchTerm", None):
-                searchTerm = request.query_params.get("searchTerm", None)
-                pageNo = request.query_params.get("pageNo", 1)
-                perPage = request.query_params.get("perPage", 10)
-                if not pageNo  or not pageNo > 0:
-                    return Response(
-                        {"error": "Please provide valid pageNo"},
-                        status=status.HTTP_400_BAD_REQUEST,
-                    )
-                if not perPage or not perPage > 0:
-                    return Response(
-                        {"error": "Please provide valid perPage"},
-                        status=status.HTTP_400_BAD_REQUEST,
-                    )
-                pageNo = int(pageNo)
-                perPage = int(perPage)
-                userObjects = dict()
-                if searchTerm:
-                    userObjects = User.objects.filter(
-                        Q(email=searchTerm) | Q(username__icontains=searchTerm)
-                    ).values_list("username", flat=True)
+            if not perPage or not perPage > 0:
+                return Response(
+                    {"error": "Please provide valid perPage"},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+            pageNo = int(pageNo)
+            perPage = int(perPage)
+            userObjects = dict()
+            if searchTerm:
+                userObjects = User.objects.filter(
+                    Q(email=searchTerm) | Q(username__icontains=searchTerm)
+                ).values_list("username", flat=True)
             else:
                 userObjects = User.objects.values_list("username", flat=True)
             paginator = Paginator(userObjects, perPage)
@@ -201,11 +191,26 @@ class FriendRequestRetrival(APIView):
                 },
                 status=status.HTTP_200_OK,
             )
-        except RequestStatus.DoesNotExist:
+        except Exception as e:
+            return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+    def get(self, request):
+        try:
+            queryType = request.GET.get('queryType', None)
+            if not queryType:
+                return Response(
+                    {"error": "Please provide valid queryType"},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+            if queryType == "GetReceivedPendingFriedRequets":
+                return self.GetReceivedPendingFriedRequets(request=request)
+            if queryType == "GetYourSentAcceptedFriendRequest":
+                return self.GetYourSentAcceptedFriendRequest(request=request)
+            if queryType == "GetUserSearchByUsernameAndEmail":
+                return self.GetUserSearchByUsernameAndEmail(request=request)
             return Response(
-                {"error": "Invalid statusType"}, status=status.HTTP_400_BAD_REQUEST
+                {"error": "Invalid query Type params"}, status=status.HTTP_400_BAD_REQUEST
             )
         except Exception as e:
-            return Response(
-                {"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR
-            )
+            return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
