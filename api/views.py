@@ -93,7 +93,7 @@ class FriendRequestProcess(APIView):
                     status=status.HTTP_400_BAD_REQUEST,
                 )
             if FriendRequest.objects.filter(
-                requestedBy_id=requestedBy.id,requestedTo_id=requestedTo.id
+                requestedBy_id=requestedBy.id, requestedTo_id=requestedTo.id
             ).exists():
                 return Response(
                     {"error": "Friend request already sent to this user"},
@@ -115,7 +115,9 @@ class FriendRequestProcess(APIView):
 
             requrstStatus = RequestStatus.objects.get(status="Pending")
             FriendRequest.objects.create(
-                requestedBy_id=requestedBy.id, requestedTo_id=requestedTo.id, status=requrstStatus
+                requestedBy_id=requestedBy.id,
+                requestedTo_id=requestedTo.id,
+                status=requrstStatus,
             )
             return Response(
                 {"message": "Friend request sent successfully"},
@@ -135,24 +137,38 @@ class FriendRequestRetrival(APIView):
         try:
             # When You want to get all friend requests which is pending Then send statusType as "Pending"
             statusType = RequestStatus.objects.get(status="Pending").id
-            return Response(FriendRequest.objects.filter(status_id=statusType, requestedTo_id=request.user.id).values(
-                requestedFrom = F('requestedBy__username'),
-                pendingFrom = F('requestedOn')
-            ), status=status.HTTP_200_OK)
+            return Response(
+                FriendRequest.objects.filter(
+                    status_id=statusType, requestedTo_id=request.user.id
+                ).values(
+                    requestedFrom=F("requestedBy__username"),
+                    pendingFrom=F("requestedOn"),
+                ),
+                status=status.HTTP_200_OK,
+            )
         except Exception as e:
-            return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            return Response(
+                {"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
 
     @staticmethod
     def GetYourSentAcceptedFriendRequest(request):
         try:
             # When You want to get all friend requests which is accepted by the user Then send statusType as "Accepted"
             statusType = RequestStatus.objects.get(status="Accepted").id
-            return Response(FriendRequest.objects.filter(status_id=statusType, requestedBy_id=request.user.id).values(
-                acceptedUsername = F('requestedTo__username'),
-                acceptedOn = F('requestedOn')
-            ), status=status.HTTP_200_OK)
+            return Response(
+                FriendRequest.objects.filter(
+                    status_id=statusType, requestedBy_id=request.user.id
+                ).values(
+                    acceptedUsername=F("requestedTo__username"),
+                    acceptedOn=F("requestedOn"),
+                ),
+                status=status.HTTP_200_OK,
+            )
         except Exception as e:
-            return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            return Response(
+                {"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
 
     @staticmethod
     def GetUserSearchByUsernameAndEmail(request):
@@ -161,7 +177,7 @@ class FriendRequestRetrival(APIView):
             print(searchTerm)
             pageNo = request.GET.get("pageNo", 1)
             perPage = request.GET.get("perPage", 10)
-            if not pageNo  or not pageNo > 0:
+            if not pageNo or not pageNo > 0:
                 return Response(
                     {"error": "Please provide valid pageNo"},
                     status=status.HTTP_400_BAD_REQUEST,
@@ -192,12 +208,13 @@ class FriendRequestRetrival(APIView):
                 status=status.HTTP_200_OK,
             )
         except Exception as e:
-            return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
+            return Response(
+                {"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
 
     def get(self, request):
         try:
-            queryType = request.GET.get('queryType', None)
+            queryType = request.GET.get("queryType", None)
             if not queryType:
                 return Response(
                     {"error": "Please provide valid queryType"},
@@ -210,7 +227,10 @@ class FriendRequestRetrival(APIView):
             if queryType == "GetUserSearchByUsernameAndEmail":
                 return self.GetUserSearchByUsernameAndEmail(request=request)
             return Response(
-                {"error": "Invalid query Type params"}, status=status.HTTP_400_BAD_REQUEST
+                {"error": "Invalid query Type params"},
+                status=status.HTTP_400_BAD_REQUEST,
             )
         except Exception as e:
-            return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            return Response(
+                {"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )

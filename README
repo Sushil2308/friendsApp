@@ -2,6 +2,13 @@
 
 This is a Django project named `friend_request`.
 
+## Prerequisites
+
+Ensure you have the following installed on your system:
+
+- Python 3.12 or higher
+- MySQL 8 or higher
+
 ## Setup
 
 1. Clone the repository

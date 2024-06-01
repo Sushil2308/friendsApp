@@ -1,16 +1,7 @@
 # Django #
-*.log
-*.pot
+
 *.pyc
 __pycache__
-db.sqlite3
-media
-
-# Backup files #
-*.bak
-
-# If you are using PyCharm #
-.idea/
 
 # If you are using virtualenv #
 env/
@@ -20,3 +11,6 @@ venv/
 .vscode/
 
 api/migrations/*.py
+
+#For Proper Testing purpose I am sending the .env file else we need to add here
+# .env

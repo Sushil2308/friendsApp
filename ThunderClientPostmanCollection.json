@@ -1,0 +1,166 @@
+{
+    "clientName": "Thunder Client",
+    "collectionName": "Practice",
+    "collectionId": "da458de4-c944-4f5a-98d8-8fdfedd6ebde",
+    "dateExported": "2024-06-01T03:50:57.092Z",
+    "version": "1.2",
+    "folders": [
+        {
+            "_id": "37f5eb2f-4e8f-4c9e-a3ff-937b48abe8d8",
+            "name": "FriendSearch",
+            "containerId": "",
+            "created": "2024-05-31T12:10:32.081Z",
+            "sortNum": 10000
+        },
+        {
+            "_id": "0e625bbe-3d60-4ffa-95d0-bbb045b29a33",
+            "name": "FriendRequest",
+            "containerId": "",
+            "created": "2024-05-31T12:10:46.534Z",
+            "sortNum": 20000
+        },
+        {
+            "_id": "c97b8a36-c6a5-4bcd-be33-22a00f4d4b0d",
+            "name": "LoginSignUp",
+            "containerId": "",
+            "created": "2024-05-31T12:11:00.940Z",
+            "sortNum": 30000
+        }
+    ],
+    "requests": [
+        {
+            "_id": "fb8f95f7-e27d-4eb7-bbbf-097c6caa9867",
+            "colId": "da458de4-c944-4f5a-98d8-8fdfedd6ebde",
+            "containerId": "c97b8a36-c6a5-4bcd-be33-22a00f4d4b0d",
+            "name": "login",
+            "url": "http://127.0.0.1:8000/api/login",
+            "method": "POST",
+            "sortNum": 20000,
+            "created": "2024-05-31T12:11:27.817Z",
+            "modified": "2024-05-31T12:12:21.271Z",
+            "headers": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"username\":\"Sushil\",\n  \"password\":\"Sushil@2308\"\n}",
+                "form": []
+            }
+        },
+        {
+            "_id": "6a85ee33-f13e-4db3-bc32-14c8c768ed09",
+            "colId": "da458de4-c944-4f5a-98d8-8fdfedd6ebde",
+            "containerId": "c97b8a36-c6a5-4bcd-be33-22a00f4d4b0d",
+            "name": "signup",
+            "url": "http://127.0.0.1:8000/api/signup",
+            "method": "POST",
+            "sortNum": 30000,
+            "created": "2024-05-31T12:13:08.518Z",
+            "modified": "2024-06-01T03:10:04.174Z",
+            "headers": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"username\":\"Aman\",\n  \"password\":\"Amit@2308\",\n  \"email\":\"Amit60648@gmail.com\"\n}",
+                "form": []
+            }
+        },
+        {
+            "_id": "9714e912-f67c-4606-ae2c-27e73c4e5588",
+            "colId": "da458de4-c944-4f5a-98d8-8fdfedd6ebde",
+            "containerId": "0e625bbe-3d60-4ffa-95d0-bbb045b29a33",
+            "name": "SendFriendRequest",
+            "url": "http://127.0.0.1:8000/api/send-request",
+            "method": "POST",
+            "sortNum": 40000,
+            "created": "2024-05-31T12:16:10.712Z",
+            "modified": "2024-06-01T03:27:41.328Z",
+            "headers": [
+                {
+                    "name": "Authorization",
+                    "value": "Token 2c1573db67fd9a2c440f74dfc486fe1c7d416eef"
+                }
+            ],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"requestedTo\":\"Sushil\"\n}",
+                "form": []
+            }
+        },
+        {
+            "_id": "4bbbf50c-06a4-46e3-bb54-feb3e47078da",
+            "colId": "da458de4-c944-4f5a-98d8-8fdfedd6ebde",
+            "containerId": "37f5eb2f-4e8f-4c9e-a3ff-937b48abe8d8",
+            "name": "GetReceivedPendingFriedRequets",
+            "url": "http://127.0.0.1:8000/api/get-friends?queryType=GetReceivedPendingFriedRequets",
+            "method": "GET",
+            "sortNum": 50000,
+            "created": "2024-05-31T12:28:35.194Z",
+            "modified": "2024-06-01T03:29:09.665Z",
+            "headers": [
+                {
+                    "name": "Authorization",
+                    "value": "Token 06e455425ba964ea0967e0edc6b24eda23a3c0cb"
+                }
+            ],
+            "params": [
+                {
+                    "name": "queryType",
+                    "value": "GetReceivedPendingFriedRequets",
+                    "isPath": false
+                }
+            ]
+        },
+        {
+            "_id": "6c70af4d-7099-4cff-a25e-5f53ea9a3ca3",
+            "colId": "da458de4-c944-4f5a-98d8-8fdfedd6ebde",
+            "containerId": "37f5eb2f-4e8f-4c9e-a3ff-937b48abe8d8",
+            "name": "GetYourSentAcceptedFriendRequest",
+            "url": "http://127.0.0.1:8000/api/get-friends?queryType=GetYourSentAcceptedFriendRequest",
+            "method": "GET",
+            "sortNum": 60000,
+            "created": "2024-06-01T03:29:15.301Z",
+            "modified": "2024-06-01T03:29:41.711Z",
+            "headers": [
+                {
+                    "name": "Authorization",
+                    "value": "Token 06e455425ba964ea0967e0edc6b24eda23a3c0cb"
+                }
+            ],
+            "params": [
+                {
+                    "name": "queryType",
+                    "value": "GetYourSentAcceptedFriendRequest",
+                    "isPath": false
+                }
+            ]
+        },
+        {
+            "_id": "149a6452-0673-409b-a832-2b43ec7e90bc",
+            "colId": "da458de4-c944-4f5a-98d8-8fdfedd6ebde",
+            "containerId": "37f5eb2f-4e8f-4c9e-a3ff-937b48abe8d8",
+            "name": "GetUserSearchByUsernameAndEmail",
+            "url": "http://127.0.0.1:8000/api/get-friends?queryType=GetUserSearchByUsernameAndEmail&searchTerm=aman",
+            "method": "GET",
+            "sortNum": 70000,
+            "created": "2024-06-01T03:29:58.883Z",
+            "modified": "2024-06-01T03:32:23.506Z",
+            "headers": [
+                {
+                    "name": "Authorization",
+                    "value": "Token 06e455425ba964ea0967e0edc6b24eda23a3c0cb"
+                }
+            ],
+            "params": [
+                {
+                    "name": "queryType",
+                    "value": "GetUserSearchByUsernameAndEmail",
+                    "isPath": false
+                },
+                {
+                    "name": "searchTerm",
+                    "value": "aman",
+                    "isPath": false
+                }
+            ]
+        }
+    ],
+    "ref": "ZTQwxYA9LejwtoExSI0bnC8p7UA_Ad2ZfR-ubhxUrhaRCa04j5I-5EdphJnej13Hing53jxehI3jNYW9MSqXfQ"
+}
